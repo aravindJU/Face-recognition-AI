@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Detection Flask</title>
+    <style>
+        body {
+            background: #f3f4f6;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+        img {
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            max-width: 100%;
+        }
+        h3 {
+            font-size: 20px;
+            margin: 20px 0 10px;
+        }
+        #metrics {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 16px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Magic Mirror</h2>
+        <img src="{{ url_for('video_feed') }}" width="640" height="480">
+        <h3>Live Metrics</h3>
+        <div id="metrics">Loading...</div>
+    </div>
+
+    <script>
+        async function updateMetrics() {
+            try {
+                let res = await fetch("/metrics");
+                let data = await res.json();
+                document.getElementById("metrics").innerHTML =
+                    `TP = ${data.TP}, FP = ${data.FP}, FN = ${data.FN}<br>
+                     Precision = ${data.Precision}, Recall = ${data.Recall}`;
+            } catch (e) {
+                document.getElementById("metrics").innerHTML = "⚠️ Error fetching metrics";
+            }
+        }
+        setInterval(updateMetrics, 2000);
+        updateMetrics();
+    </script>
+</body>
+</html>
